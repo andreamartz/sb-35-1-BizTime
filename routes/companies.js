@@ -12,6 +12,23 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/:code', async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const result = await db.query(
+      `SELECT code, name, description FROM companies
+      WHERE code = $1`, [code]
+    );
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such company: ${code}`, 404)
+    } else {
+      return res.json({company: result.rows[0]});
+    }
+  } catch(err) {
+    return next(err);
+  }
+})
+
 router.post('/', async (req, res, next) => {
   try {
     const { code, name, description } = req.body;
