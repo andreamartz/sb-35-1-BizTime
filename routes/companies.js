@@ -48,7 +48,7 @@ router.put('/:code', async (req, res, next) => {
       WHERE code = $1
       RETURNING code, name, description`, [code, name, description]
     );
-    if (results.rows.length === 0) {
+    if (result.rows.length === 0) {
       throw new ExpressError(`No such company: ${code}`, 404)
     } else {
       return res.json({company: result.rows[0]});
