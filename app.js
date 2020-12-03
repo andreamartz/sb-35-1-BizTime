@@ -1,11 +1,11 @@
 /** BizTime express application. */
 
-
 const express = require("express");
 
 const app = express();
 const ExpressError = require("./expressError")
 
+// middleware to parse incoming request body as JSON
 app.use(express.json());
 
 const companyRoutes = require("./routes/companies");
