@@ -88,4 +88,22 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await db.query(
+      "DELETE FROM invoices WHERE id = $1 RETURNING id", 
+      [id]
+    );
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such invoice: ${id}`, 404)
+    } else {
+      return res.json({ status: "deleted" });
+    }
+  } catch(err) {
+    return next(err);
+  }
+});
+
+
 module.exports = router;
