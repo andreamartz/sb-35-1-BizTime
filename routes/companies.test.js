@@ -13,13 +13,21 @@ let testCompany;
 
 // Note the two single quotes in 'Erik''s Bikes': The first one escapes the second one (somehow)
 beforeEach(async function() {
+  // Add company(-ies)
   const result = await db.query(`INSERT INTO companies (code, name, description) VALUES ('erik', 'Erik''s Bikes', 'Your local bike store') RETURNING code, name, description`);
   testCompany = result.rows[0];
+
+  // Add invoice(s)
+  // await db.query("SELECT setval('invoices_id_seq', 1, false)");
+  await db.query(`
+  INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) 
+    VALUES ('erik', 100, false, '2020-12-03', null) RETURNING id, comp_code, amt, paid, add_date, paid_date`);
 });
 
 afterEach(async function() {
   // delete any data created by test
   await db.query('DELETE FROM companies');
+  await db.query('DELETE FROM invoices');
 });
 
 afterAll(async function() {
@@ -40,7 +48,12 @@ describe("GET /companies/:code", () => {
     const res = await request(app).get(`/companies/${testCompany.code}`);
     expect(res.statusCode).toBe(200);   
     expect(res.body).toEqual({
-      company: testCompany
+      "company": { 
+        code: testCompany.code,
+        name: testCompany.name,
+        description: testCompany.description,
+        invoices: [ expect.any(Number) ]
+      }
     });
   });
   test("Responds with a 404 for invalid id", async () => {
