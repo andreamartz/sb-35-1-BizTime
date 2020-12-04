@@ -27,7 +27,7 @@ router.get('/:code', async (req, res, next) => {
   } catch(err) {
     return next(err);
   }
-})
+});
 
 router.post('/', async (req, res, next) => {
   try {
@@ -37,7 +37,7 @@ router.post('/', async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-})
+});
 
 router.put('/:code', async (req, res, next) => {
   try {
@@ -57,7 +57,7 @@ router.put('/:code', async (req, res, next) => {
   } catch(err) {
     return next(err);
   }
-})
+});
 
 router.delete('/:code', async (req, res, next) => {
   try {

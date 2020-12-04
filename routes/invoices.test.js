@@ -72,3 +72,50 @@ describe("GET /invoices/:id", () => {
     expect(res.statusCode).toBe(404);   
   });
 });
+
+describe("POST /invoices", () => {
+  test("Creates a single invoice", async () => {
+    const res = await request(app).post('/invoices')
+      .send(
+        { 
+          comp_code: 'erik',
+          amt: 199
+        }
+    );
+    // expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({ 
+      invoice: { 
+          id: expect.any(Number),
+          comp_code: 'erik',
+          amt: 199,
+          paid: false,
+          add_date: "2020-12-04T06:00:00.000Z",
+          paid_date: null
+      }
+    });
+  });
+});
+
+describe("PUT /invoices/id", () => {
+  test("Updates a single invoice", async () => {
+    const res = await request(app)
+      .put(`/invoices/${testInvoice.id}`)
+      .send({ amt: 152.67 });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ 
+      invoice: { id: expect.any(Number),
+        comp_code: testInvoice.comp_code,
+        amt: 152.67,
+        paid: false,
+        add_date: expect.any(String),
+        paid_date: null
+      }
+    });
+  });
+  test("Responds with 404 for invalid code", async () => {
+    const res = await request(app)
+      .put(`/invoices/56`)
+      .send({ amt: 203.58 });
+    expect(res.statusCode).toBe(404);
+  });
+});
