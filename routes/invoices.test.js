@@ -71,50 +71,5 @@ describe("GET /invoices/:id", () => {
     const res = await request(app).get(`/invoices/0`);
     expect(res.statusCode).toBe(404);   
   });
+
 });
-
-
-
-
-
-
-
-
-
-
-
-// ****************************
-// beforeEach(createData);
-
-// afterEach(async function() {
-//   // delete any data created by test
-//   await db.query('DELETE FROM invoices');
-// });
-
-// afterAll(async function() {
-//   // close db connection
-//   await db.end();
-// });
-
-// describe("GET /invoices", () => {
-//   test("Get an array with one invoice", async () => {
-//     const res = await request(app).get('/invoices');
-//     expect(1).toBe(1);
-//     expect(res.statusCode).toBe(200);   // toBe compares the reference in memory, not just the values
-//     expect(res.body).toEqual({ invoices: [testInvoice]} );
-//   });
-// });
-
-// describe("GET /invoices/:id", () => {
-//   test("Gets a single company", async () => {
-//     const res = await request(app).get(`/invoices/${testInvoice.id}`);
-//     expect(res.statusCode).toBe(200);   
-//     expect(res.body).toEqual({
-//       invoice: testInvoice
-//     });
-//   });
-//   test("Responds with a 404 for invalid id", async () => {
-//     const res = await request(app).get(`/invoices/0`);
-//     expect(res.statusCode).toBe(404);   
-//   });
-// });
