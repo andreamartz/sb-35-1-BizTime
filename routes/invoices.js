@@ -68,4 +68,24 @@ router.post('/', async function(req, res, next) {
   };
 });
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { amt } = req.body;
+    
+    const result = await db.query(
+      `UPDATE invoices SET amt=$2
+      WHERE id = $1
+      RETURNING id, comp_code, amt, paid, add_date, paid_date`, [id, amt]
+    );
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such invoice: ${id}`, 404)
+    } else {
+      return res.json({ invoice: result.rows[0] });
+    }
+  } catch(err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
