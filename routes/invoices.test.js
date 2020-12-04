@@ -119,3 +119,15 @@ describe("PUT /invoices/id", () => {
     expect(res.statusCode).toBe(404);
   });
 });
+
+describe("DELETE /invoices/id", () => {
+  test("Deletes a single invoice", async () => {
+    const res = await request(app).delete(`/invoices/${testInvoice.id}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ status: "deleted" });
+  });
+  test("Responds with 404 for invalid id", async () => {
+    const res = await request(app).delete(`/invoices/0`);
+    expect(res.statusCode).toBe(404);
+  });
+});
