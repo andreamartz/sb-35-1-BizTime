@@ -17,7 +17,7 @@ beforeEach(async function() {
   // Add data for invoice(s)
   const result = await db.query(`
     INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) 
-      VALUES ('erik', 100, false, '2020-12-03', null) RETURNING comp_code, amt, paid, add_date, paid_date`);
+      VALUES ('erik', 100, false, '2020-12-03', null) RETURNING id, comp_code, amt, paid, add_date, paid_date`);
   testInvoice = result.rows[0];
   console.log("testInvoice: ", testInvoice);
 });
@@ -37,66 +37,38 @@ describe("GET /invoices", () => {
   test("Get an array with one invoice", async () => {
     const res = await request(app).get('/invoices');
     expect(res.statusCode).toBe(200);   // toBe compares the reference in memory, not just the values
-    // expect(res.body).toEqual({ invoices: [testInvoice] } );
+    expect(res.body).toEqual({ "invoices": 
+      [ 
+        { 
+          id: testInvoice.id, 
+          comp_code: testInvoice.comp_code 
+        }
+      ]
+    });
   });
 });
 
-// describe("GET /companies/:code", () => {
-//   test("Gets a single company", async () => {
-//     const res = await request(app).get(`/companies/${testCompany.code}`);
-//     expect(res.statusCode).toBe(200);   
-//     expect(res.body).toEqual({
-//       company: testCompany
-//     });
-//   });
-//   test("Responds with a 404 for invalid id", async () => {
-//     const res = await request(app).get(`/companies/0`);
-//     expect(res.statusCode).toBe(404);   
-//   });
-// });
-
-
-
-
-
-
-
-
-
-
-
-// ****************************
-// beforeEach(createData);
-
-// afterEach(async function() {
-//   // delete any data created by test
-//   await db.query('DELETE FROM invoices');
-// });
-
-// afterAll(async function() {
-//   // close db connection
-//   await db.end();
-// });
-
-// describe("GET /invoices", () => {
-//   test("Get an array with one invoice", async () => {
-//     const res = await request(app).get('/invoices');
-//     expect(1).toBe(1);
-//     expect(res.statusCode).toBe(200);   // toBe compares the reference in memory, not just the values
-//     expect(res.body).toEqual({ invoices: [testInvoice]} );
-//   });
-// });
-
-// describe("GET /invoices/:id", () => {
-//   test("Gets a single company", async () => {
-//     const res = await request(app).get(`/invoices/${testInvoice.id}`);
-//     expect(res.statusCode).toBe(200);   
-//     expect(res.body).toEqual({
-//       invoice: testInvoice
-//     });
-//   });
-//   test("Responds with a 404 for invalid id", async () => {
-//     const res = await request(app).get(`/invoices/0`);
-//     expect(res.statusCode).toBe(404);   
-//   });
-// });
+describe("GET /invoices/:id", () => {
+  test("Gets a single invoice", async () => {
+    const res = await request(app).get(`/invoices/${testInvoice.id}`);
+    expect(res.statusCode).toBe(200);   
+    expect(res.body).toEqual({
+      "invoice": {
+        id: testInvoice.id,
+        amt: testInvoice.amt,
+        paid: testInvoice.paid,
+        add_date: "2020-12-03T06:00:00.000Z",
+        paid_date: testInvoice.paid_date,
+        "company": {
+          code: "erik",
+          name: "Erik's Bikes",
+          description: "Your local bike store"
+        }
+      }
+    });
+  });
+  test("Responds with a 404 for invalid id", async () => {
+    const res = await request(app).get(`/invoices/0`);
+    expect(res.statusCode).toBe(404);   
+  });
+});
