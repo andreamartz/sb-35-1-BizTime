@@ -72,3 +72,26 @@ describe("GET /invoices/:id", () => {
     expect(res.statusCode).toBe(404);   
   });
 });
+
+describe("POST /invoices", () => {
+  test("Creates a single invoice", async () => {
+    const res = await request(app).post('/invoices')
+      .send(
+        { 
+          comp_code: 'erik',
+          amt: 199
+        }
+    );
+    // expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({ 
+      invoice: { 
+          id: expect.any(Number),
+          comp_code: 'erik',
+          amt: 199,
+          paid: false,
+          add_date: "2020-12-04T06:00:00.000Z",
+          paid_date: null
+      }
+    });
+  });
+});
