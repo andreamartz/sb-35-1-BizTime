@@ -14,20 +14,35 @@ let testCompany;
 // Note the two single quotes in 'Erik''s Bikes': The first one escapes the second one (somehow)
 beforeEach(async function() {
   // Add company(-ies)
-  const result = await db.query(`INSERT INTO companies (code, name, description) VALUES ('erik', 'Erik''s Bikes', 'Your local bike store') RETURNING code, name, description`);
+  const result = await db.query(`INSERT INTO companies (code, name, description) 
+  VALUES ('erik', 'Erik''s Bikes', 'Your local bike store')
+  RETURNING code, name, description`);
   testCompany = result.rows[0];
 
   // Add invoice(s)
-  // await db.query("SELECT setval('invoices_id_seq', 1, false)");
   await db.query(`
   INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) 
     VALUES ('erik', 100, false, '2020-12-03', null) RETURNING id, comp_code, amt, paid, add_date, paid_date`);
+
+  // Add industry(-ies)
+  await db.query(`
+  INSERT INTO industries (code, industry)
+  VALUES ('mech', 'Mechanical'), ('tr', 'Trades')
+  RETURNING code, industry`);
+
+  // Add companies_industries
+  await db.query(`
+  INSERT INTO companies_industries (comp_code, ind_code)
+  VALUES ('erik', 'mech'), ('erik', 'tr')
+  RETURNING comp_code, ind_code`);
 });
 
 afterEach(async function() {
   // delete any data created by test
   await db.query('DELETE FROM companies');
   await db.query('DELETE FROM invoices');
+  await db.query('DELETE FROM industries');
+  await db.query('DELETE FROM companies_industries');
 });
 
 afterAll(async function() {
@@ -52,7 +67,8 @@ describe("GET /companies/:code", () => {
         code: testCompany.code,
         name: testCompany.name,
         description: testCompany.description,
-        invoices: [ expect.any(Number) ]
+        invoices: [ expect.any(Number) ],
+        industries: [ "Mechanical", "Trades" ]
       }
     });
   });
