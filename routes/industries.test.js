@@ -27,15 +27,16 @@ beforeEach(async function() {
     INSERT INTO industries (code, industry) 
       VALUES ('it', 'Information Technology')
       RETURNING code, industry`);
-  testInvoice = result.rows[0];
-  console.log("testInvoice: ", testInvoice);
+  testIndustry = result.rows[0];
+  console.log("testIndustry: ", testIndustry);
 });
 
-// afterEach(async function() {
-//   // delete any data created by test
-//   await db.query('DELETE FROM invoices');
-//   await db.query('DELETE FROM companies');
-// });
+afterEach(async function() {
+  // delete any data created by test
+  // await db.query('DELETE FROM invoices');
+  // await db.query('DELETE FROM companies');
+  await db.query('DELETE FROM industries');
+});
 
 // afterAll(async function() {
 //   // close db connection
@@ -57,6 +58,15 @@ beforeEach(async function() {
 //   });
 // });
 
+describe("GET /industries", () => {
+  test("Get an array with one industry", async () => {
+    const res = await request(app).get(`/industries`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      "industries": [testIndustry]
+    });
+  });
+});
 
 describe("POST /industries", () => {
   test("Creates a single industry", async () => {
