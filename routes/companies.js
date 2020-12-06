@@ -16,11 +16,6 @@ router.get('/', async (req, res, next) => {
 router.get('/:code', async (req, res, next) => {
   try {
     const { code } = req.params;
-    // const companyResults = await db.query(`
-    //   SELECT code, name, description 
-    //   FROM companies
-    //   WHERE code = $1`, [code]
-    // );
     const companyResults = await db.query(`
       SELECT c.code, 
              c.name, 
