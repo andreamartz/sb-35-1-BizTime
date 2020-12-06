@@ -19,7 +19,6 @@ beforeEach(async function() {
     INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) 
       VALUES ('erik', 100, false, '2020-12-03', null) RETURNING id, comp_code, amt, paid, add_date, paid_date`);
   testInvoice = result.rows[0];
-  console.log("testInvoice: ", testInvoice);
 });
 
 afterEach(async function() {
@@ -82,14 +81,13 @@ describe("POST /invoices", () => {
           amt: 199
         }
     );
-    // expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(201);
     expect(res.body).toEqual({ 
       invoice: { 
           id: expect.any(Number),
           comp_code: 'erik',
           amt: 199,
           paid: false,
-          // add_date: "2020-12-04T06:00:00.000Z",
           add_date: expect.any(String),
           paid_date: null
       }
