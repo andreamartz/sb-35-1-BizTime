@@ -89,7 +89,8 @@ describe("POST /invoices", () => {
           comp_code: 'erik',
           amt: 199,
           paid: false,
-          add_date: "2020-12-04T06:00:00.000Z",
+          // add_date: "2020-12-04T06:00:00.000Z",
+          add_date: expect.any(String),
           paid_date: null
       }
     });
