@@ -10,23 +10,27 @@ router.get('/', async function (req, res, next) {
     );
     console.log(results.rows);
     return res.json({ industries: results.rows });
+  } catch (err) {
+    return next(err);
+  }
+})
 
-    // const industryResults = await db.query(`
-    //   SELECT ind.code AS ind_code, ind.industry, c.code AS comp_code
-    //   FROM industries as ind
-    //   LEFT JOIN companies_industries AS ci
-    //   ON ind_code = ci.ind_code
-    //   LEFT JOIN companies AS c
-    //   ON comp_code = ci.comp_code
-    //   WHERE ind_code = $1`, [req.params.code]);
-    // console.log("industryResults.rows: ", industryResults.rows);
-
-    // if (industryResults.rows.length === 0) {
-    //   throw new ExpressError(`No industries found: ${code}`, 404)
-    // }
-    // let { ind_code } = industryResults.rows[0];
-    // let compCodes = industryResults.rows.map(r => r.comp_code);
-    // return res.json({ind_code, comp_code, compCodes });
+router.get('/:ind_code', async function (req, res, next) {
+  try {
+    const { ind_code } = req.params;
+    const results =  await db.query(`
+      SELECT ind.code AS ind_code, ind.industry, c.code AS comp_code
+        FROM industries AS ind
+        LEFT JOIN companies_industries AS ci
+          ON ind.code = ci.ind_code
+        LEFT JOIN companies AS c
+          ON ci.comp_code = c.code
+      WHERE ind_code = $1`, [req.params.ind_code]
+    );
+    console.log("results.rows: ", results.rows);
+    let { industry } = results.rows[0];
+    let companies = results.rows.map(r => r.comp_code); // an array of company codes
+    return res.json({ ind_code, industry, companies });
   } catch (err) {
     return next(err);
   }

@@ -11,59 +11,56 @@ const db = require("../db");
 let testIndustry;
 
 beforeEach(async function() {
-//   // Add data for company(-ies)
-//   await db.query(`INSERT INTO companies (code, name, description) VALUES ('erik', 'Erik''s Bikes', 'Your local bike store') RETURNING code, name, description`);
-
-//   // Add data for invoice(s)
-//   const result = await db.query(`
-//     INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) 
-//       VALUES ('erik', 100, false, '2020-12-03', null) RETURNING id, comp_code, amt, paid, add_date, paid_date`);
-//   testInvoice = result.rows[0];
-//   console.log("testInvoice: ", testInvoice);
-// });
+  // Add data for company(-ies)
+  await db.query(`INSERT INTO companies (code, name, description) VALUES ('erik', 'Erik''s Bikes', 'Your local bike store'),
+    ('sew', 'Sue''s Garment Repair', 'Best repairs') RETURNING code, name, description`);
 
   // Add data for industry(-ies)
   const result = await db.query(`
     INSERT INTO industries (code, industry) 
-      VALUES ('it', 'Information Technology')
+      VALUES ('mech', 'Mechanical'),
+        ('tr', 'Trades')
       RETURNING code, industry`);
-  testIndustry = result.rows[0];
+  testIndustry = result.rows[1];
   console.log("testIndustry: ", testIndustry);
+
+  // Add companies_industries
+  await db.query(`
+  INSERT INTO companies_industries (comp_code, ind_code)
+  VALUES ('erik', 'mech'), ('erik', 'tr'), ('sew', 'tr')
+  RETURNING comp_code, ind_code`);
 });
 
 afterEach(async function() {
   // delete any data created by test
   // await db.query('DELETE FROM invoices');
-  // await db.query('DELETE FROM companies');
+  await db.query('DELETE FROM companies');
   await db.query('DELETE FROM industries');
 });
 
-// afterAll(async function() {
-//   // close db connection
-//   await db.end();
-// });
-
-// describe("GET /invoices", () => {
-//   test("Get an array with one invoice", async () => {
-//     const res = await request(app).get('/invoices');
-//     expect(res.statusCode).toBe(200);   // toBe compares the reference in memory, not just the values
-//     expect(res.body).toEqual({ "invoices": 
-//       [ 
-//         { 
-//           id: testInvoice.id, 
-//           comp_code: testInvoice.comp_code 
-//         }
-//       ]
-//     });
-//   });
-// });
+afterAll(async function() {
+  // close db connection
+  await db.end();
+});
 
 describe("GET /industries", () => {
-  test("Get an array with one industry", async () => {
+  test("Get an array with two industries", async () => {
     const res = await request(app).get(`/industries`);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
-      "industries": [testIndustry]
+      "industries": [ {code: "mech", industry: "Mechanical"}, testIndustry]
+    });
+  });
+});
+
+describe("GET /industries/:ind_code", () => {
+  test("Gets a single industry", async () => {
+    const res = await request(app).get(`/industries/${testIndustry.code}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({
+      ind_code: testIndustry.code,
+      industry: testIndustry.industry,
+      companies: ["erik", "sew"]
     });
   });
 });
