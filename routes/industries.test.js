@@ -48,7 +48,8 @@ describe("GET /industries", () => {
     const res = await request(app).get(`/industries`);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
-      "industries": [ {code: "mech", industry: "Mechanical"}, testIndustry]
+      "industries": [ {ind_code: "mech", industry: "Mechanical", companies: expect.any(Array)}, 
+      {ind_code: "tr", industry: "Trades", companies: expect.any(Array)}]
     });
   });
 });
