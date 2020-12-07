@@ -81,6 +81,26 @@ router.put('/:code', async (req, res, next) => {
   }
 });
 
+router.post('/:code', async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const { ind_code } = req.body;
+
+    const result = await db.query(
+      `INSERT INTO companies_industries (comp_code, ind_code)
+      VALUES ($1, $2)
+      RETURNING comp_code, ind_code`, [code, ind_code]
+    );
+    if (result.rows.length === 0) {
+      throw new ExpressError(`No such company: ${code}`, 404)
+    } else {
+      return res.status(201).json({ company_industry: result.rows[0] });
+    }
+  } catch(err) {
+    return next(err);
+  }
+});
+
 router.delete('/:code', async (req, res, next) => {
   try {
     const { code } = req.params;

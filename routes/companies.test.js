@@ -27,7 +27,7 @@ beforeEach(async function() {
   // Add industry(-ies)
   await db.query(`
   INSERT INTO industries (code, industry)
-  VALUES ('mech', 'Mechanical'), ('tr', 'Trades')
+  VALUES ('mech', 'Mechanical'), ('tr', 'Trades'), ('transp', 'Transportation')
   RETURNING code, industry`);
 
   // Add companies_industries
@@ -90,6 +90,18 @@ describe("POST /companies", () => {
       company: { code: "company-x",
         name: "Company *X*",
         description: "A great company!"}});
+  });
+});
+
+describe("POST /companies/code", () => {
+  test("Associate an industry with a company", async () => {
+    const res = await request(app).post('/companies/erik')
+      .send({ ind_code: 'transp'
+      });
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual({ 
+      company_industry: { comp_code: "erik",
+        ind_code: "transp"}});
   });
 });
 
