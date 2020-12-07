@@ -99,13 +99,13 @@ describe("PUT /invoices/id", () => {
   test("Updates a single invoice", async () => {
     const res = await request(app)
       .put(`/invoices/${testInvoice.id}`)
-      .send({ amt: 152.67 });
+      .send({ amt: 152.67, paid: true });
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({ 
       invoice: { id: expect.any(Number),
         comp_code: testInvoice.comp_code,
         amt: 152.67,
-        paid: false,
+        paid: true,
         add_date: expect.any(String),
         paid_date: null
       }
